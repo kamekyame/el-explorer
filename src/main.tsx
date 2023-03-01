@@ -1,16 +1,18 @@
 /* @refresh reload */
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
-import { open, message } from "@tauri-apps/api/dialog";
+import { open, message, ask } from "@tauri-apps/api/dialog";
 import { listen } from "@tauri-apps/api/event";
 import { arch, platform, type, version } from "@tauri-apps/api/os";
+import { relaunch } from "@tauri-apps/api/process";
 import { open as openLink } from "@tauri-apps/api/shell";
-import { createSignal } from "solid-js";
+import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
+import { createSignal, Show } from "solid-js";
 import { render } from "solid-js/web";
 
 import "./globals.css";
 import List from "./List";
 
-const [path, setPath] = createSignal<string>("f:\\");
+const [path, setPath] = createSignal<string>();
 const openDialog = async () => {
   const result = await open({
     multiple: false,
@@ -26,8 +28,6 @@ await listen("open", async () => {
 });
 
 await listen("inquiry", async () => {
-  console.log("inquiry");
-
   const status = [
     `version : ${await getVersion()}`,
     `tauri version : ${await getTauriVersion()}`,
@@ -44,14 +44,13 @@ await listen("inquiry", async () => {
   const sp = formUrl.searchParams;
   sp.set("usp", "pp_url");
   sp.set("entry.1969709165", status);
-  // "https://docs.google.com/forms/d/e/1FAIpQLSdLgSGMhXzutGoAxCdBXvR1ovNcf5q6LTcT7yy6TSsfNDlG3A/viewform?usp=pp_url&entry.1969709165=%E3%81%82%E3%81%82%E3%81%82%E3%81%82%E3%81%82"
   await openLink(formUrl.href);
-  // window.location.href = "https://google.com";
 });
 
 await listen("about", async () => {
   console.log("about");
   const msg = [
+    "アプリバージョン：v" + (await getVersion()),
     "作者：kamekyame(Twitter: @SuzuTomo2001)",
     "",
     "バグ報告や機能リクエスト等は「ヘルプ⇒お問い合わせ」よりお願いします。",
@@ -61,11 +60,39 @@ await listen("about", async () => {
   await message(msg.join("\n"), { title: "EL-Explorerについて" });
 });
 
+async function myCheckUpdate() {
+  const { manifest, shouldUpdate } = await checkUpdate();
+  if (shouldUpdate === false || manifest === undefined) return;
+  console.log();
+  const askMsg = [
+    `新しいバージョン（v${manifest.version}）が利用可能です。`,
+    "更新しますか？（更新が終わると自動で再起動します。）",
+  ].join("\n");
+  const yes = await ask(askMsg);
+  if (yes) {
+    await installUpdate();
+    await relaunch();
+  }
+}
+myCheckUpdate();
+
 const App = () => {
   return (
     <>
       <div class="w-screen h-screen">
-        <List path={path()} />
+        <Show
+          when={path()}
+          keyed
+          fallback={
+            <div class="w-full h-full flex items-center justify-center">
+              <div>
+                「ファイル」→「開く」より対象のフォルダを開いてください。
+              </div>
+            </div>
+          }
+        >
+          {(path) => <List path={path} />}
+        </Show>
       </div>
       <div id="dialog" class="absolute" />
     </>
