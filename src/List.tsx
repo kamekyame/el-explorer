@@ -13,6 +13,7 @@ import {
   VsTrash,
   VsNewFolder,
   VsRefresh,
+  VsClose,
 } from "solid-icons/vs";
 import {
   Component,
@@ -46,6 +47,7 @@ import {
   createPreFolder,
   setEditingItemPath,
   createFolder,
+  setItems,
 } from "./components/Dir";
 import HeaderIcon from "./components/HeaderIcon";
 import Info from "./components/Info";
@@ -216,7 +218,7 @@ const List: Component<{ path: string }> = (props) => {
   const deleteItem = async () => {
     if (changed()) {
       message(
-        "変更を保留中のソングがあります。\n保存してから削除の操作を行ってください。",
+        "変更を保留中のソングがあります。\n変更を保存または破棄してから削除の操作を行ってください。",
         { type: "error" }
       );
     } else {
@@ -236,12 +238,24 @@ const List: Component<{ path: string }> = (props) => {
   const paste = () => {
     if (changed()) {
       message(
-        "変更を保留中のソングがあります。\n保存してから貼り付けてください。",
+        "変更を保留中のソングがあります。\n変更を保存または破棄してから貼り付けてください。",
         { type: "error" }
       );
     } else {
       copy();
     }
+  };
+
+  const discardChanges = () => {
+    children()?.forEach((child) => {
+      if (child.type !== "song") return;
+      setItems(
+        (item) => item.path === child.path,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "changed" as any,
+        child.original
+      );
+    });
   };
 
   return (
@@ -262,7 +276,12 @@ const List: Component<{ path: string }> = (props) => {
           }}
           title="変更を保存"
         />
-
+        <HeaderIcon
+          icon={VsClose}
+          enable={changed()}
+          onClick={discardChanges}
+          title="変更を破棄"
+        />
         <div class="h-full my-1 border border-gray-500" />
         <HeaderIcon
           icon={VsRefresh}
