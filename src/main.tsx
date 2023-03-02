@@ -47,6 +47,14 @@ await listen("inquiry", async () => {
   await openLink(formUrl.href);
 });
 
+await listen("update", async () => {
+  const noUpdate = !(await myCheckUpdate());
+  if (noUpdate) {
+    const msg = ["利用可能なアップデートはありません。"];
+    await message(msg.join("\n"), { title: "アップデートの確認" });
+  }
+});
+
 await listen("about", async () => {
   console.log("about");
   const msg = [
@@ -62,7 +70,7 @@ await listen("about", async () => {
 
 async function myCheckUpdate() {
   const { manifest, shouldUpdate } = await checkUpdate();
-  if (shouldUpdate === false || manifest === undefined) return;
+  if (shouldUpdate === false || manifest === undefined) return false;
   console.log();
   const askMsg = [
     `新しいバージョン（v${manifest.version}）が利用可能です。`,
@@ -73,6 +81,7 @@ async function myCheckUpdate() {
     await installUpdate();
     await relaunch();
   }
+  return true;
 }
 myCheckUpdate();
 

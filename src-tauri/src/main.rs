@@ -11,12 +11,15 @@ struct OpenPayload;
 fn main() {
     let open = CustomMenuItem::new("open", "開く");
     let inquiry = CustomMenuItem::new("inquiry", "お問い合わせ");
+    let update = CustomMenuItem::new("update", "アップデートの確認");
     let about = CustomMenuItem::new("about", "このアプリについて");
     let file_submenu = Submenu::new("ファイル", Menu::new().add_item(open));
     let help_submenu = Submenu::new(
         "ヘルプ",
         Menu::new()
             .add_item(inquiry)
+            .add_native_item(tauri::MenuItem::Separator)
+            .add_item(update)
             .add_native_item(tauri::MenuItem::Separator)
             .add_item(about),
     );
@@ -29,16 +32,9 @@ fn main() {
         .on_menu_event(|event| {
             let window = event.window();
             match event.menu_item_id() {
-                "open" => {
-                    window.emit("open", OpenPayload {}).unwrap();
+                _ => {
+                    window.emit(event.menu_item_id(), OpenPayload {}).unwrap();
                 }
-                "inquiry" => {
-                    window.emit("inquiry", OpenPayload {}).unwrap();
-                }
-                "about" => {
-                    window.emit("about", OpenPayload {}).unwrap();
-                }
-                _ => {}
             }
         })
         .run(tauri::generate_context!())
