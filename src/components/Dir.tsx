@@ -327,6 +327,17 @@ async function getItemNames(folder: Folder) {
   });
 }
 
+/**
+ * itemのKeyを取得する関数。基本はpathを返すが、プロテクトソングのみfolder名がSONG_001で固定のためsecfileを返す。
+ */
+export function getItemKey(item: Item) {
+  if (item.type === "song" && item.changed.security === "ON") {
+    return item.changed.secfile as string;
+  } else {
+    return item.path;
+  }
+}
+
 /** フォルダの子要素を読み込み */
 export async function readFolder(parentPath: string) {
   const entries = await readDir(parentPath);
@@ -392,7 +403,7 @@ export async function readFolder(parentPath: string) {
       (item) => item.path === parentPath,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       "childrenPath" as any,
-      addItem.map((item) => item.path)
+      addItem.map(getItemKey)
     );
   });
 }

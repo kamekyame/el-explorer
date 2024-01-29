@@ -1,4 +1,5 @@
 import { message, ask } from "@tauri-apps/api/dialog";
+import { join } from "@tauri-apps/api/path";
 import clsx from "clsx";
 import FolderIcon from "flat-color-icons/svg/folder.svg";
 import KeyIcon from "flat-color-icons/svg/key.svg";
@@ -48,11 +49,12 @@ import {
   setEditingItemPath,
   createFolder,
   setItems,
+  getItemKey,
 } from "./components/Dir";
 import HeaderIcon from "./components/HeaderIcon";
 import Info from "./components/Info";
 import SaveDialog from "./components/SaveDialog";
-import { SongData, Folder } from "./lib/types";
+import { SongData, Folder, Item } from "./lib/types";
 
 const [isDisplayFile, setIsDisplayFile] = createSignal(false);
 
@@ -142,9 +144,10 @@ const List: Component<{ path: string }> = (props) => {
     return list ?? [];
   });
 
+  /** nowFolderPathが変更されたらリストの子要素も更新される */
   const children = createMemo(() => {
     const children_ = getNowFolder()?.childrenPath.flatMap((childPath) => {
-      const child = items.find((item) => item.path === childPath);
+      const child = items.find((item) => getItemKey(item) === childPath);
       if (child === undefined) return [];
       if (child.type === "file" && isDisplayFile() === false) return [];
       return [child];
