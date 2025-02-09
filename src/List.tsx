@@ -410,6 +410,7 @@ const List: Component<{ path: string }> = (props) => {
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (editingItemPath() === data.path) return;
                     setSelectedItem(data);
                   }}
                   onDblClick={() => {
@@ -422,12 +423,17 @@ const List: Component<{ path: string }> = (props) => {
                       <MusicIcon />
                     )}
                   </div>
-                  <div class="py-2 flex-grow truncate">
+                  <div
+                    class={clsx(
+                      "py-2 flex-grow",
+                      editingItemPath() !== data.path && "pointer-events-none"
+                    )}
+                  >
                     <input
                       ref={(ref_) => {
                         ref = ref_;
                       }}
-                      class="bg-transparent"
+                      class="w-full pl-1 outline-offset-[-1px] bg-transparent truncate"
                       value={data.name}
                       disabled={editingItemPath() !== data.path}
                       onKeyDown={(e) => {
