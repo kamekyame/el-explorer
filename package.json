@@ -34,7 +34,7 @@
     "clsx": "^2.1.1",
     "encoding-japanese": "^2.2.0",
     "flat-color-icons": "^1.1.0",
-    "minimatch": "^6.2.0",
+    "minimatch": "^10.0.1",
     "postcss": "^8.5.1",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.4.8"
