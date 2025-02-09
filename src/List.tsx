@@ -93,7 +93,7 @@ const Tree: Component<{
     <div>
       <div
         class={clsx(
-          "flex items-center gap-1 text-sm p-0.5 rounded w-max",
+          "flex items-center gap-1 text-sm p-0.5 rounded-sm w-max",
           "hover:bg-gray-200 ",
           nowFolderPath() === props.tree.path && "bg-orange-200"
         )}
@@ -362,7 +362,7 @@ const List: Component<{ path: string }> = (props) => {
           }
         />
       </div>
-      <div class="px-2 border flex flex-row items-center gap-2 bg-gray-100">
+      <div class="px-2 border border-gray-200 flex flex-row items-center gap-2 bg-gray-100">
         <For each={breadcrumbs()}>
           {(name, i) => (
             <>
@@ -374,7 +374,7 @@ const List: Component<{ path: string }> = (props) => {
           )}
         </For>
       </div>
-      <div class="flex-grow flex overflow-y-auto">
+      <div class="grow flex overflow-y-auto">
         <div
           class={clsx(
             "bg-gray-100 p-2 flex-col gap-0.5 w-[10rem] shrink-0 shadow-inner overflow-x-auto",
@@ -386,7 +386,7 @@ const List: Component<{ path: string }> = (props) => {
           </Show>
         </div>
         <ul
-          class="divide-y flex-grow shrink-auto h-full min-w-[200px] overflow-y-auto border-x border-gray-400"
+          class="divide-y divide-gray-200 grow shrink-auto h-full min-w-[200px] overflow-y-auto border-x border-gray-400"
           onClick={() => {
             setSelectedItem(undefined);
           }}
@@ -425,7 +425,7 @@ const List: Component<{ path: string }> = (props) => {
                   </div>
                   <div
                     class={clsx(
-                      "py-2 flex-grow",
+                      "py-2 grow",
                       editingItemPath() !== data.path && "pointer-events-none"
                     )}
                   >

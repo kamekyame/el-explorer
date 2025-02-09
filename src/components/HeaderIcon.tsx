@@ -15,7 +15,7 @@ const Icon: Component<{
     <div
       class={clsx(
         "p-1", // size設定
-        "rounded border border-transparent", // border設定
+        "rounded-sm border border-transparent", // border設定
         "flex justify-center items-center", // flex設定
         props.enable
           ? "text-black hover:bg-blue-100 hover:border hover:border-blue-200"

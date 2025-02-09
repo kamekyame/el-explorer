@@ -50,7 +50,7 @@ const ChangeDialog = () => {
 
   return (
     <div
-      class="bg-white p-3 rounded flex flex-col gap-3"
+      class="bg-white p-3 rounded-sm flex flex-col gap-3"
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -66,7 +66,7 @@ const ChangeDialog = () => {
             )}
           >
             <thead>
-              <tr class="border-b border-black divide-x">
+              <tr class="border-b border-black divide-x divide-gray-200">
                 <th>ID</th>
                 <th>ソング名</th>
                 <th>項目</th>
@@ -78,7 +78,7 @@ const ChangeDialog = () => {
             <For each={changes()}>
               {(item) => {
                 return (
-                  <tr class="divide-x">
+                  <tr class="divide-x divide-gray-200">
                     <td class="text-center">{item.songId}</td>
                     <td class="text-left">{item.name}</td>
                     <td class="text-center">{songKeys[item.key].name}</td>
@@ -94,7 +94,7 @@ const ChangeDialog = () => {
           </table>
           <div class="flex flex-row-reverse">
             <button
-              class="bg-red-700 text-white py-1 px-2 mx-2 rounded flex gap-1 items-center"
+              class="bg-red-700 text-white py-1 px-2 mx-2 rounded-sm flex gap-1 items-center"
               onClick={async () => {
                 setState("saving");
 
