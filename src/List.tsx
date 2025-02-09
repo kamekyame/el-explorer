@@ -410,6 +410,7 @@ const List: Component<{ path: string }> = (props) => {
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (editingItemPath() === data.path) return;
                     setSelectedItem(data);
                   }}
                   onDblClick={() => {
