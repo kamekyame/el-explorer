@@ -184,8 +184,10 @@ export async function writeNamFile(folder: Folder) {
     });
   });
 
-  // バックアップファイルの作成
-  await copyFile(path, path + ".backup");
+  // 既にNAMファイルがあればバックアップファイルの作成
+  if (await exists(path)) {
+    await copyFile(path, path + ".backup");
+  }
 
   const line: string[] = [];
   for await (const song of songs) {
