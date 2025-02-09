@@ -422,7 +422,12 @@ const List: Component<{ path: string }> = (props) => {
                       <MusicIcon />
                     )}
                   </div>
-                  <div class="py-2 flex-grow truncate">
+                  <div
+                    class={clsx(
+                      "py-2 flex-grow truncate",
+                      editingItemPath() !== data.path && "pointer-events-none"
+                    )}
+                  >
                     <input
                       ref={(ref_) => {
                         ref = ref_;
