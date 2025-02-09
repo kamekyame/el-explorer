@@ -425,7 +425,7 @@ const List: Component<{ path: string }> = (props) => {
                   </div>
                   <div
                     class={clsx(
-                      "py-2 flex-grow truncate",
+                      "py-2 flex-grow",
                       editingItemPath() !== data.path && "pointer-events-none"
                     )}
                   >
@@ -433,7 +433,7 @@ const List: Component<{ path: string }> = (props) => {
                       ref={(ref_) => {
                         ref = ref_;
                       }}
-                      class="w-full pl-1 outline-offset-[-1px] bg-transparent"
+                      class="w-full pl-1 outline-offset-[-1px] bg-transparent truncate"
                       value={data.name}
                       disabled={editingItemPath() !== data.path}
                       onKeyDown={(e) => {
