@@ -433,7 +433,7 @@ const List: Component<{ path: string }> = (props) => {
                       ref={(ref_) => {
                         ref = ref_;
                       }}
-                      class="bg-transparent"
+                      class="w-full pl-1 outline-offset-[-1px] bg-transparent"
                       value={data.name}
                       disabled={editingItemPath() !== data.path}
                       onKeyDown={(e) => {
