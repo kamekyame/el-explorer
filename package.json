@@ -31,7 +31,7 @@
     "@tauri-apps/api": "^1.6.0",
     "@types/encoding-japanese": "^2.2.1",
     "autoprefixer": "^10.4.20",
-    "clsx": "^1.2.1",
+    "clsx": "^2.1.1",
     "encoding-japanese": "^2.2.0",
     "flat-color-icons": "^1.1.0",
     "minimatch": "^6.2.0",
