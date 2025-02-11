@@ -6,7 +6,7 @@ import {
   removeDir,
   removeFile,
 } from "@tauri-apps/api/fs";
-import { join, basename, sep, publicDir } from "@tauri-apps/api/path";
+import { join, basename, sep } from "@tauri-apps/api/path";
 import { minimatch } from "minimatch";
 import { batch, createSignal } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";

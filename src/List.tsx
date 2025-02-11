@@ -1,5 +1,4 @@
 import { message, ask } from "@tauri-apps/api/dialog";
-import { join } from "@tauri-apps/api/path";
 import clsx from "clsx";
 import FolderIcon from "flat-color-icons/svg/folder.svg";
 import KeyIcon from "flat-color-icons/svg/key.svg";
@@ -54,7 +53,7 @@ import {
 import HeaderIcon from "./components/HeaderIcon";
 import Info from "./components/Info";
 import SaveDialog from "./components/SaveDialog";
-import { SongData, Folder, Item } from "./lib/types";
+import { SongData, Folder } from "./lib/types";
 
 const [isDisplayFile, setIsDisplayFile] = createSignal(false);
 

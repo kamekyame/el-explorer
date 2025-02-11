@@ -22,7 +22,7 @@ const Icon: Component<{
           : "text-gray-500"
       )}
       onClick={() => {
-        props.enable ? props.onClick() : undefined;
+        if (props.enable) props.onClick();
       }}
       title={props.title}
     >

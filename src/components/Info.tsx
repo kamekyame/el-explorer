@@ -6,7 +6,7 @@ import { VsAdd, VsEdit, VsTrash } from "solid-icons/vs";
 import { Component, createMemo, createSignal, For, JSX, Show } from "solid-js";
 
 import { updateSongData } from "./Dir";
-import { Item, Song, SongData, songKeys } from "../lib/types";
+import { Item, Song, songKeys } from "../lib/types";
 
 const parts = {
   partUk: { name: "上鍵盤", class: "bg-red-700 text-white" },
@@ -60,22 +60,7 @@ const SongPartButton: Component<{ item: Song; part: keyof typeof parts }> = (
   );
 };
 
-const listKeys = [
-  "songName",
-  "folder",
-  "model",
-  "midfile",
-  "blkfile001",
-  "blkfile002",
-  "blkfile003",
-  "blkfile004",
-  "blkfile005",
-  "secfile",
-] as const satisfies readonly (keyof SongData)[];
-const editableKeys = [
-  "songName",
-] as const satisfies readonly (typeof listKeys)[number][];
-type EditKey = (typeof editableKeys)[number];
+type EditKey = "songName";
 
 const SongInfo: Component<{ item: Song }> = (props) => {
   const [refs, setRefs] = createSignal<Record<string, HTMLInputElement>>({});
