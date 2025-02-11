@@ -1,18 +1,22 @@
-module.exports = {
-  root: true,
-  parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "solid", "import", "disable-autofix"],
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:solid/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "prettier",
-  ],
-  rules: {
-    "import/order"
-      : [
+import eslint from "@eslint/js";
+import importPlugin from "eslint-plugin-import";
+import solid from "eslint-plugin-solid/configs/typescript";
+import tseslint from "typescript-eslint";
+
+
+export default tseslint.config(
+  {
+    ignores: ["dist"],
+  },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  solid,
+  {
+    plugins: {
+      "import": importPlugin,
+    },
+    rules: {
+      "import/order": [
         "error",
         {
           "groups": [
@@ -37,7 +41,8 @@ module.exports = {
           },
 
         }
-      ]
-  },
+      ],
+    },
 
-};
+  },
+)
