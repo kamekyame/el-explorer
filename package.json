@@ -34,6 +34,6 @@
     "flat-color-icons": "^1.1.0",
     "minimatch": "^10.0.1",
     "solid-icons": "^1.1.0",
-    "solid-js": "^1.4.8"
+    "solid-js": "~1.9.4"
   }
 }
