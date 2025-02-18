@@ -1,4 +1,4 @@
-import { message, ask } from "@tauri-apps/api/dialog";
+import { message, ask } from "@tauri-apps/plugin-dialog";
 import clsx from "clsx";
 import FolderIcon from "flat-color-icons/svg/folder.svg";
 import KeyIcon from "flat-color-icons/svg/key.svg";
@@ -65,6 +65,7 @@ type Tree = {
 };
 
 function createTree(folder: Folder) {
+  // console.log(folder);
   const tree: Tree = {
     path: folder.path,
     folderName: folder.name,
@@ -72,6 +73,7 @@ function createTree(folder: Folder) {
     opened: folder.opened,
   };
   const children: Tree[] = [];
+
   if (folder.opened) {
     folder.childrenPath.forEach((childPath) => {
       const child = items.find((item) => item.path === childPath);
@@ -169,11 +171,12 @@ const List: Component<{ path: string }> = (props) => {
 
   const tree = createMemo(() => {
     if (items[0] === undefined || items[0].type !== "folder") return;
+    console.log("tree", items);
     return createTree(items[0]);
   });
 
   const showUnSavedDialog = () => {
-    message("保存されていない変更があります。", { type: "warning" });
+    message("保存されていない変更があります。", { kind: "warning" });
   };
 
   createEffect(() => {
@@ -221,7 +224,7 @@ const List: Component<{ path: string }> = (props) => {
     if (changed()) {
       message(
         "変更を保留中のソングがあります。\n変更を保存または破棄してから削除の操作を行ってください。",
-        { type: "error" }
+        { kind: "error" }
       );
     } else {
       const selected = selectedItem();
@@ -229,7 +232,7 @@ const List: Component<{ path: string }> = (props) => {
 
       const ok = await ask(
         `${selected.type}: ${selected.name}を削除します。\n変更は元に戻せません。よろしいですか？`,
-        { type: "warning" }
+        { kind: "warning" }
       );
       if (ok) {
         remove(selected);
@@ -241,7 +244,7 @@ const List: Component<{ path: string }> = (props) => {
     if (changed()) {
       message(
         "変更を保留中のソングがあります。\n変更を保存または破棄してから貼り付けてください。",
-        { type: "error" }
+        { kind: "error" }
       );
     } else {
       copy();
@@ -304,7 +307,7 @@ const List: Component<{ path: string }> = (props) => {
             if (item === undefined) return;
             if (item.type === "song" && item.original.security === "ON") {
               message("セキュリティが設定されている曲は切り取りできません。", {
-                type: "error",
+                kind: "error",
               });
               return;
             }
@@ -320,7 +323,7 @@ const List: Component<{ path: string }> = (props) => {
             if (item === undefined) return;
             if (item.type === "song" && item.original.security === "ON") {
               message("セキュリティが設定されている曲はコピーできません。", {
-                type: "error",
+                kind: "error",
               });
               return;
             }

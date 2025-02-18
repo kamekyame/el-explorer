@@ -1,5 +1,5 @@
-import { open } from "@tauri-apps/api/dialog";
 import { sep } from "@tauri-apps/api/path";
+import { open } from "@tauri-apps/plugin-dialog";
 import clsx from "clsx";
 import KeyIcon from "flat-color-icons/svg/key.svg";
 import { VsAdd, VsEdit, VsTrash } from "solid-icons/vs";
@@ -152,7 +152,7 @@ const SongInfo: Component<{ item: Song }> = (props) => {
           <dd>
             <input
               type="text"
-              value={(song().midfile ?? sep).split(sep).at(-1)}
+              value={(song().midfile ?? sep()).split(sep()).at(-1)}
               placeholder="未指定"
               disabled
             />
