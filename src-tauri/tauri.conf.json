@@ -2,101 +2,72 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "EL-Explorer",
-    "version": "../version.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "all": false,
-        "copyFile": true,
-        "createDir": true,
-        "exists": true,
-        "readDir": true,
-        "readFile": true,
-        "removeDir": true,
-        "removeFile": true,
-        "renameFile": false,
-        "scope": ["**/*"],
-        "writeFile": true
-      },
-      "dialog": {
-        "all": false,
-        "ask": true,
-        "confirm": false,
-        "message": true,
-        "open": true,
-        "save": false
-      },
-      "path": {
-        "all": true
-      },
-      "os": {
-        "all": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "Utility",
-      "copyright": "",
+  "productName": "EL-Explorer",
+  "version": "../version.json",
+  "mainBinaryName": "EL-Explorer",
+  "identifier": "com.kamekyame.el-explorer",
+  "bundle": {
+    "active": true,
+    "category": "Utility",
+    "copyright": "",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.kamekyame.el-explorer",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
     },
-    "security": {
-      "csp": null
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
     },
+    "resources": [],
+    "shortDescription": "",
+    "targets": "all",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    },
+    "createUpdaterArtifacts": "v1Compatible"
+  },
+  
+  "plugins": {
     "updater": {
-      "active": true,
       "endpoints": [
         "https://github.com/kamekyame/el-explorer/releases/latest/download/latest.json"
       ],
-      "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMyQzFDODk0QzFGMEFGNzcKUldSM3IvREJsTWpCd3Y4eVpFS0tjOWk3bHBoamN3L295TjhZck9NWHJRcjVjNG1nQWk5Nzc0eDcK"
-    },
+    }
+  },
+  "app": {
+    "withGlobalTauri": false,
     "windows": [
       {
         "fullscreen": false,
         "height": 600,
         "title": "EL-Explorer",
         "resizable": true,
-        "width": 800
+        "width": 800,
+        "useHttpsScheme": true,
+        "theme":"Light"
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

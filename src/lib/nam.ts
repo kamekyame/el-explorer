@@ -1,11 +1,11 @@
+import { basename, join } from "@tauri-apps/api/path";
 import {
   copyFile,
   exists,
-  readBinaryFile,
-  removeFile,
-  writeBinaryFile,
-} from "@tauri-apps/api/fs";
-import { basename, join } from "@tauri-apps/api/path";
+  readFile,
+  remove,
+  writeFile,
+} from "@tauri-apps/plugin-fs";
 import Encoding from "encoding-japanese";
 import { batch } from "solid-js";
 
@@ -18,7 +18,7 @@ function checkPartState(s?: string): s is PartState {
 }
 
 export async function readNamFile(namPath: string, parent: string) {
-  const namBinary = await readBinaryFile(namPath);
+  const namBinary = await readFile(namPath);
   const text = new TextDecoder("shift-jis").decode(namBinary);
   return await readNam(text, parent);
 }
@@ -158,7 +158,7 @@ export async function writeNamFile(folder: Folder) {
     if (song.original.midfile !== song.changed.midfile) {
       if (song.original.midfile !== undefined) {
         if (await exists(song.original.midfile)) {
-          await removeFile(song.original.midfile);
+          await remove(song.original.midfile);
         }
       }
       if (song.changed.midfile !== undefined) {
@@ -212,5 +212,5 @@ export async function writeNamFile(folder: Folder) {
 
   const unicodeArray = Encoding.stringToCode(text);
   const sjisArray = Encoding.convert(unicodeArray, "SJIS", "UNICODE");
-  await writeBinaryFile(path, sjisArray);
+  await writeFile(path, Uint8Array.from(sjisArray));
 }

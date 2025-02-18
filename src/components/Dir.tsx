@@ -1,12 +1,11 @@
-import { message } from "@tauri-apps/api/dialog";
+import { join, basename, sep } from "@tauri-apps/api/path";
+import { message } from "@tauri-apps/plugin-dialog";
 import {
   readDir,
   copyFile,
-  createDir,
-  removeDir,
-  removeFile,
-} from "@tauri-apps/api/fs";
-import { join, basename, sep, publicDir } from "@tauri-apps/api/path";
+  mkdir,
+  remove as fsRemove,
+} from "@tauri-apps/plugin-fs";
 import { minimatch } from "minimatch";
 import { batch, createSignal } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
@@ -111,12 +110,12 @@ function getDuplicationName(name_: string, exists: string[]) {
 async function copyDir(from: string, to: string) {
   const children = await readDir(from);
   console.log("createDir", to);
-  createDir(to, { recursive: true });
+  mkdir(to, { recursive: true });
   for (const child of children) {
     const fromPath = `${from}/${child.name}`;
     const toPath = `${to}/${child.name}`;
     console.log("copy", fromPath, toPath);
-    if (child.children) {
+    if (child.isDirectory) {
       await copyDir(fromPath, toPath);
     } else {
       await copyFile(fromPath, toPath);
@@ -163,7 +162,7 @@ export async function createFolder(prePath: string, newName: string) {
   // console.log(parent.childrenPath.filter((path) => path !== prePath));
 
   try {
-    await createDir(newPath);
+    await mkdir(newPath);
     setItems((item) => item.path === prePath, "name", newName);
     setItems((item) => item.path === prePath, "path", newPath);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -174,7 +173,7 @@ export async function createFolder(prePath: string, newName: string) {
     console.log(items);
   } catch (e) {
     console.error(e);
-    message("フォルダの作成に失敗しました", { type: "error" });
+    message("フォルダの作成に失敗しました", { kind: "error" });
     setItems(items.filter((item) => item.path !== newPath));
   }
 }
@@ -184,11 +183,11 @@ export async function remove(removeItem: Item) {
   if (parent === undefined || parent.type !== "folder") return;
 
   if (removeItem.type === "folder") {
-    await removeDir(removeItem.path);
+    await fsRemove(removeItem.path, { recursive: true });
   } else if (removeItem.type === "file") {
-    await removeFile(removeItem.path);
+    await fsRemove(removeItem.path);
   } else if (removeItem.type === "song") {
-    await removeDir(removeItem.path, { recursive: true });
+    await fsRemove(removeItem.path, { recursive: true });
     setItems(
       items.filter((item) => {
         if (item.path === removeItem.path) return false;
@@ -288,7 +287,7 @@ export async function copy() {
         deletedChildrenId
       );
 
-      await removeDir(from.path, { recursive: true });
+      await fsRemove(from.path, { recursive: true });
     }
 
     await writeNamFile(fromParent);
@@ -302,7 +301,7 @@ export async function copy() {
 
     await copyDir(from.path, `${to.path}/${folderName}`);
     if (type === "cut") {
-      await removeDir(from.path, { recursive: true });
+      await fsRemove(from.path, { recursive: true });
     }
   } else if (from.type === "file") {
     const names = await getItemNames(to);
@@ -310,7 +309,7 @@ export async function copy() {
 
     await copyFile(from.path, `${to.path}/${fileName}`);
     if (type === "cut") {
-      await removeFile(from.path);
+      await fsRemove(from.path);
     }
   }
 
@@ -344,24 +343,29 @@ export async function readFolder(parentPath: string) {
 
   const namFile = entries.find((entry) => entry.name === "ELS_SONG.NAM");
   // console.log("namFile path", namFile?.path);
-  const songs = namFile ? await readNamFile(namFile.path, parentPath) : [];
+  const songs = namFile
+    ? await readNamFile(await join(parentPath, "ELS_SONG.NAM"), parentPath)
+    : [];
 
-  const folderFiles: (Folder | File)[] = entries.flatMap((entry) => {
-    const { name, children, path } = entry;
-    if (!name) return []; // nameがないものは無視
+  const folderFiles: (Folder | File)[] = [];
+  for await (const entry of entries) {
+    const { name, isDirectory } = entry;
+    if (!name) continue; // nameがないものは無視
 
     // nameがないものや構成ファイル、C02ファイル、OS固有のファイルは無視
-    for (const exclusionFile of exclusionFiles) {
-      if (minimatch(name, exclusionFile)) return [];
-    }
+    const isIgnore = exclusionFiles.some((exclusionFile) => {
+      if (minimatch(name, exclusionFile)) return true;
+      return false;
+    });
+    if (isIgnore) continue;
+
+    const path = await join(parentPath, name);
 
     // Songの対象フォルダだったら無視
-    if (songs.some((song) => song.path === path)) return [];
+    if (songs.some((song) => song.path === path)) continue;
 
     let item: Folder | File;
-    if (children) {
-      // childrenがあるものはFolder
-
+    if (isDirectory) {
       const oldFolder = items.find(
         (item): item is Folder => item.type === "folder" && item.path === path
       );
@@ -383,8 +387,8 @@ export async function readFolder(parentPath: string) {
         parentPath: parentPath,
       };
     }
-    return [item];
-  });
+    folderFiles.push(item);
+  }
 
   const addItem = [...folderFiles, ...songs];
 
@@ -409,7 +413,7 @@ export async function readFolder(parentPath: string) {
 }
 
 export async function changeBaseFolder(baseFolderPath: string) {
-  let name = baseFolderPath.split(sep)[0];
+  let name = baseFolderPath.split(sep())[0];
   try {
     name = await basename(baseFolderPath, "");
   } catch {

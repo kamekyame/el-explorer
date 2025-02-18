@@ -1,12 +1,12 @@
-import { open } from "@tauri-apps/api/dialog";
 import { sep } from "@tauri-apps/api/path";
+import { open } from "@tauri-apps/plugin-dialog";
 import clsx from "clsx";
 import KeyIcon from "flat-color-icons/svg/key.svg";
 import { VsAdd, VsEdit, VsTrash } from "solid-icons/vs";
 import { Component, createMemo, createSignal, For, JSX, Show } from "solid-js";
 
 import { updateSongData } from "./Dir";
-import { Item, Song, SongData, songKeys } from "../lib/types";
+import { Item, Song, songKeys } from "../lib/types";
 
 const parts = {
   partUk: { name: "上鍵盤", class: "bg-red-700 text-white" },
@@ -60,22 +60,7 @@ const SongPartButton: Component<{ item: Song; part: keyof typeof parts }> = (
   );
 };
 
-const listKeys = [
-  "songName",
-  "folder",
-  "model",
-  "midfile",
-  "blkfile001",
-  "blkfile002",
-  "blkfile003",
-  "blkfile004",
-  "blkfile005",
-  "secfile",
-] as const satisfies readonly (keyof SongData)[];
-const editableKeys = [
-  "songName",
-] as const satisfies readonly typeof listKeys[number][];
-type EditKey = typeof editableKeys[number];
+type EditKey = "songName";
 
 const SongInfo: Component<{ item: Song }> = (props) => {
   const [refs, setRefs] = createSignal<Record<string, HTMLInputElement>>({});
@@ -121,7 +106,7 @@ const SongInfo: Component<{ item: Song }> = (props) => {
           "[&>*:nth-child(even)]:bg-gray-100",
           "[&_dt]:w-1/3 [&_dt]:shrink-0",
           "[&_dd]:w-2/3 [&_dd]:flex [&_dd]:items-center [&_dd]:gap-2",
-          "[&_dd_input]:flex-grow [&_dd_input]:w-full [&_dd_input]:p-0.5 [&_dd_input]:bg-transparent [&_dd_input]:border [&_dd_input]:rounded [&_dd_input:enabled]:border-black [&_dd_input:disabled]:border-transparent"
+          "[&_dd_input]:grow [&_dd_input]:w-full [&_dd_input]:p-0.5 [&_dd_input]:bg-transparent [&_dd_input]:border [&_dd_input]:rounded-sm [&_dd_input:enabled]:border-black [&_dd_input:disabled]:border-transparent"
         )}
       >
         <div>
@@ -167,7 +152,7 @@ const SongInfo: Component<{ item: Song }> = (props) => {
           <dd>
             <input
               type="text"
-              value={(song().midfile ?? sep).split(sep).at(-1)}
+              value={(song().midfile ?? sep()).split(sep()).at(-1)}
               placeholder="未指定"
               disabled
             />
@@ -228,8 +213,13 @@ const Info: Component<{ item: Item }> = (props) => {
   };
   return (
     <div>
-      <div class={clsx("flex m-3 pb-1 gap-2 items-center", "border-b-2")}>
-        <h1 class="flex-grow">{props.item.name}</h1>
+      <div
+        class={clsx(
+          "flex m-3 pb-1 gap-2 items-center",
+          "border-b-2 border-gray-200"
+        )}
+      >
+        <h1 class="grow">{props.item.name}</h1>
         <Show when={security()}>
           <div class="shrink-0 w-6">
             <KeyIcon />

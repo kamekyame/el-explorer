@@ -1,5 +1,4 @@
-import { message, ask } from "@tauri-apps/api/dialog";
-import { join } from "@tauri-apps/api/path";
+import { message, ask } from "@tauri-apps/plugin-dialog";
 import clsx from "clsx";
 import FolderIcon from "flat-color-icons/svg/folder.svg";
 import KeyIcon from "flat-color-icons/svg/key.svg";
@@ -54,7 +53,7 @@ import {
 import HeaderIcon from "./components/HeaderIcon";
 import Info from "./components/Info";
 import SaveDialog from "./components/SaveDialog";
-import { SongData, Folder, Item } from "./lib/types";
+import { SongData, Folder } from "./lib/types";
 
 const [isDisplayFile, setIsDisplayFile] = createSignal(false);
 
@@ -66,6 +65,7 @@ type Tree = {
 };
 
 function createTree(folder: Folder) {
+  // console.log(folder);
   const tree: Tree = {
     path: folder.path,
     folderName: folder.name,
@@ -73,6 +73,7 @@ function createTree(folder: Folder) {
     opened: folder.opened,
   };
   const children: Tree[] = [];
+
   if (folder.opened) {
     folder.childrenPath.forEach((childPath) => {
       const child = items.find((item) => item.path === childPath);
@@ -93,7 +94,7 @@ const Tree: Component<{
     <div>
       <div
         class={clsx(
-          "flex items-center gap-1 text-sm p-0.5 rounded w-max",
+          "flex items-center gap-1 text-sm p-0.5 rounded-sm w-max",
           "hover:bg-gray-200 ",
           nowFolderPath() === props.tree.path && "bg-orange-200"
         )}
@@ -170,11 +171,12 @@ const List: Component<{ path: string }> = (props) => {
 
   const tree = createMemo(() => {
     if (items[0] === undefined || items[0].type !== "folder") return;
+    console.log("tree", items);
     return createTree(items[0]);
   });
 
   const showUnSavedDialog = () => {
-    message("保存されていない変更があります。", { type: "warning" });
+    message("保存されていない変更があります。", { kind: "warning" });
   };
 
   createEffect(() => {
@@ -222,7 +224,7 @@ const List: Component<{ path: string }> = (props) => {
     if (changed()) {
       message(
         "変更を保留中のソングがあります。\n変更を保存または破棄してから削除の操作を行ってください。",
-        { type: "error" }
+        { kind: "error" }
       );
     } else {
       const selected = selectedItem();
@@ -230,7 +232,7 @@ const List: Component<{ path: string }> = (props) => {
 
       const ok = await ask(
         `${selected.type}: ${selected.name}を削除します。\n変更は元に戻せません。よろしいですか？`,
-        { type: "warning" }
+        { kind: "warning" }
       );
       if (ok) {
         remove(selected);
@@ -242,7 +244,7 @@ const List: Component<{ path: string }> = (props) => {
     if (changed()) {
       message(
         "変更を保留中のソングがあります。\n変更を保存または破棄してから貼り付けてください。",
-        { type: "error" }
+        { kind: "error" }
       );
     } else {
       copy();
@@ -305,7 +307,7 @@ const List: Component<{ path: string }> = (props) => {
             if (item === undefined) return;
             if (item.type === "song" && item.original.security === "ON") {
               message("セキュリティが設定されている曲は切り取りできません。", {
-                type: "error",
+                kind: "error",
               });
               return;
             }
@@ -321,7 +323,7 @@ const List: Component<{ path: string }> = (props) => {
             if (item === undefined) return;
             if (item.type === "song" && item.original.security === "ON") {
               message("セキュリティが設定されている曲はコピーできません。", {
-                type: "error",
+                kind: "error",
               });
               return;
             }
@@ -362,7 +364,7 @@ const List: Component<{ path: string }> = (props) => {
           }
         />
       </div>
-      <div class="px-2 border flex flex-row items-center gap-2 bg-gray-100">
+      <div class="px-2 border border-gray-200 flex flex-row items-center gap-2 bg-gray-100">
         <For each={breadcrumbs()}>
           {(name, i) => (
             <>
@@ -374,7 +376,7 @@ const List: Component<{ path: string }> = (props) => {
           )}
         </For>
       </div>
-      <div class="flex-grow flex overflow-y-auto">
+      <div class="grow flex overflow-y-auto">
         <div
           class={clsx(
             "bg-gray-100 p-2 flex-col gap-0.5 w-[10rem] shrink-0 shadow-inner overflow-x-auto",
@@ -386,7 +388,7 @@ const List: Component<{ path: string }> = (props) => {
           </Show>
         </div>
         <ul
-          class="divide-y flex-grow shrink-auto h-full min-w-[200px] overflow-y-auto border-x border-gray-400"
+          class="divide-y divide-gray-200 grow shrink-auto h-full min-w-[200px] overflow-y-auto border-x border-gray-400"
           onClick={() => {
             setSelectedItem(undefined);
           }}
@@ -425,7 +427,7 @@ const List: Component<{ path: string }> = (props) => {
                   </div>
                   <div
                     class={clsx(
-                      "py-2 flex-grow",
+                      "py-2 grow",
                       editingItemPath() !== data.path && "pointer-events-none"
                     )}
                   >
